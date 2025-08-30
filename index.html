@@ -922,7 +922,7 @@ window.addEventListener('DOMContentLoaded', () => {
 <div class="character-img" id="character-img">
 <img alt="프로필" id="main-profile-img" src="" style="width:100%; height:100%; border-radius:50%;"/>
 </div>
-<h1 id="main-title">초미비니의<br/>한국사 쪼개기</h1>
+<h1 id="main-title">초미비니의<br/>세계사 쪼개기</h1>
 <div id="stats-container">
 <p><strong>LV.<span id="level-display">1</span> (<span id="xp-display">0</span>XP)</strong><br/>학습 진행도: <span id="progress-display">22/1000</span><span id="progress-percent"></span></p>
 </div>
@@ -8244,7 +8244,7 @@ function addUser() {
         document.getElementById('character-img').style.display = 'none';
     }
 }
-        function updateTitle() { mainTitle.innerHTML = `${currentUserId}의<br>한국사 쪼개기`; }
+        function updateTitle() { mainTitle.innerHTML = `${currentUserId}의<br>세계사 쪼개기`; }
         function showUserMessage(message) { userMessage.textContent = message; userMessage.classList.add('show'); setTimeout(() => userMessage.classList.remove('show'), 3000); }
         function saveAllUsers() { localStorage.setItem('wordMasterUsers', JSON.stringify(allUsers)); }
         function saveUserData() { if (currentUserId) { allUsers[currentUserId] = userData; saveAllUsers(); } }
