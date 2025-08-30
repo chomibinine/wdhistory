@@ -1165,7 +1165,7 @@ if (!autoAdvance && comboCount > 1) {
 fullQuizData = [
   {
     "id": "M1-1-01",
-    "question": "‘역사’라는 말이 포괄하는 두 측면(과거에 실제로 일어난 일과 그것을 연구·서술한 것)을 함께 가리키는 표현은?",
+    "question": "‘역사’라는 말이 포괄하는 두 측면을 함께 가리키는 표현은?",
     "options": ["사실로서의 역사와 기록으로서의 역사", "정치사와 경제사", "문화사와 사회사", "연표와 사료집"],
     "answer": "사실로서의 역사와 기록으로서의 역사",
     "hint": "과거 ‘그 자체’와 그걸 연구해 쓴 ‘이야기’ 두 겹입니다."
@@ -9365,5 +9365,965 @@ document.addEventListener('DOMContentLoaded', function(){
 });
 </script>
 
+
+<style id="premium-3d-theme">
+  :root{
+    --primary-900:#1c2a3a; --primary-700:#2f4b6c; --primary-500:#2f80ed;
+    --gold-500:#f5c542; --gold-400:#ffd76a; --gold-300:#ffeaa7;
+    --bg-0:#f7f9fc; --bg-1:#ffffff; --ink:#2b2f38; --muted:#6b7280;
+    --glass: rgba(255,255,255,.65); --glass-stroke: rgba(255,255,255,.55);
+    --shadow-1: 0 10px 30px rgba(28,42,58,.12);
+    --shadow-2: 0 18px 50px rgba(28,42,58,.18);
+  }
+
+  /* --- Background with subtle 3D radial blobs --- */
+  body{
+    background: radial-gradient(1200px 600px at 10% -10%, #e8f0ff 0%, transparent 50%),
+                radial-gradient(800px 500px at 110% 10%, #fff3d6 0%, transparent 55%),
+                linear-gradient(180deg, #f9fbff 0%, #f3f6fb 100%);
+  }
+  .scene-glow{position:fixed;inset:0;pointer-events:none;z-index:-1}
+  .scene-glow::before,.scene-glow::after{content:"";position:absolute;filter:blur(40px);opacity:.5}
+  .scene-glow::before{width:320px;height:320px;left:-60px;top:-40px;border-radius:50%;background:linear-gradient(135deg,#b8d3ff,#e9f1ff)}
+  .scene-glow::after{width:380px;height:380px;right:-80px;top:60px;border-radius:50%;background:linear-gradient(135deg,#ffe8a3,#fff3cf)}
+
+  /* --- Glass card upgrade --- */
+  #app-container{
+    background: var(--glass) !important;
+    backdrop-filter: blur(14px) saturate(1.1);
+    -webkit-backdrop-filter: blur(14px) saturate(1.1);
+    border: 1px solid var(--glass-stroke);
+    box-shadow: var(--shadow-1), inset 0 1px 0 rgba(255,255,255,.6);
+    border-radius: 24px !important;
+  }
+
+  /* Decorative top accent */
+  #app-container::before{
+    height: 8px !important;
+    background: linear-gradient(90deg, var(--gold-400), var(--primary-500), #7bd3ff) !important;
+  }
+
+  /* --- Title with 3D text shadow --- */
+  h1#main-title{
+    letter-spacing:.2px;
+    background: linear-gradient(90deg, var(--primary-700), var(--primary-500));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    text-shadow: 0 1px 0 rgba(255,255,255,.7), 0 6px 18px rgba(47,128,237,.2);
+  }
+
+  /* --- Stat chip (neumorphism) --- */
+  #stats-container{
+    background: #f6fafc !important;
+    border: 1px solid #e9eef5;
+    box-shadow: 8px 8px 18px rgba(28,42,58,.08), -6px -6px 14px rgba(255,255,255,.85) !important;
+  }
+
+  /* --- Quiz range list cards --- */
+  #quiz-selection{background:#f7fafc !important;border:1px solid #e6edf7;border-radius:16px}
+  #quiz-selection label{
+    border:1px solid #e8eef7 !important;
+    background: #fff !important;
+    box-shadow: 0 6px 16px rgba(28,42,58,.05);
+  }
+  #quiz-selection label:hover{
+    transform: translateY(-2px) !important;
+    box-shadow: 0 14px 28px rgba(47,128,237,.15) !important;
+    background: linear-gradient(180deg,#ffffff 0%, #f9fbff 100%) !important;
+  }
+  #quiz-selection label.selected{border-color:var(--primary-500)!important;background:#f2f8ff!important}
+  #quiz-selection .quiz-range.completed{background:#ecfff2 !important;border:1px solid #b8f2ca}
+
+  /* --- Timer & chips --- */
+  #quiz-stats-display{
+    background: rgba(255,255,255,.8) !important;
+    border: 1px solid rgba(255,255,255,.9);
+    box-shadow: 0 8px 18px rgba(0,0,0,.06);
+  }
+  #timer{
+    color:#e11d48!important; background: rgba(225,29,72,.08)!important;
+    border:1px solid rgba(225,29,72,.2); box-shadow: 0 8px 18px rgba(225,29,72,.12)
+  }
+
+  /* --- Animated progress bar --- */
+  #progress-bar{background: linear-gradient(270deg, var(--gold-400), var(--primary-500), #7bd3ff);background-size: 300% 300%;animation: barFlow 5s ease infinite}
+  @keyframes barFlow{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+
+  /* --- Question card --- */
+  #question-container p{
+    background: linear-gradient(180deg,#ffffff 0%, #f6f9ff 100%) !important;
+    border: 1px solid #e9eef7;
+    box-shadow: 0 10px 24px rgba(28,42,58,.08);
+  }
+
+  /* --- Options (3D buttons) --- */
+  #options-container button{
+    background: linear-gradient(180deg,#ffffff 0%, #f7faff 100%) !important;
+    border: 1px solid #e9eef7 !important;
+    border-radius: 14px !important;
+    box-shadow: 6px 6px 14px rgba(28,42,58,.08), -4px -4px 12px rgba(255,255,255,.8) !important;
+    transition: transform .18s ease, box-shadow .18s ease;
+  }
+  #options-container button:hover:not(:disabled){
+    transform: translateY(-2px);
+    box-shadow: 8px 12px 24px rgba(47,128,237,.12), -4px -4px 12px rgba(255,255,255,.9);
+  }
+  #options-container button.correct{
+    background: linear-gradient(180deg,#eafff2 0%, #e3ffe9 100%) !important;
+    border-color:#34d399 !important; color:#065f46 !important;
+    box-shadow: 0 10px 26px rgba(16,185,129,.18) !important;
+  }
+  #options-container button.incorrect{
+    background: linear-gradient(180deg,#fff0f3 0%, #ffe7eb 100%) !important;
+    border-color:#fb7185 !important; color:#9f1239 !important;
+    box-shadow: 0 10px 26px rgba(251,113,133,.18) !important;
+  }
+
+  /* --- Hint button (gold pill) --- */
+  #hint-btn{
+    background: linear-gradient(135deg,var(--gold-400),var(--gold-500)) !important;
+    color:#1a1a1a !important; border: none !important;
+    box-shadow: 0 8px 22px rgba(245,197,66,.35);
+  }
+  #hint-btn:hover{transform: translateY(-2px); box-shadow: 0 12px 30px rgba(245,197,66,.45)}
+
+  /* --- Primary/Secondary btns --- */
+  button.primary-btn{
+    background: linear-gradient(135deg, var(--primary-500), #7bd3ff) !important;
+    color:#fff !important; border:none !important; border-radius:16px !important;
+    box-shadow: var(--shadow-2);
+  }
+  button.primary-btn:hover{transform:translateY(-2px) scale(1.01)}
+  button.secondary-btn{
+    background: linear-gradient(135deg, var(--gold-400), var(--gold-500)) !important;
+    color:#111 !important; border:none !important; border-radius:16px !important;
+    box-shadow: 0 14px 28px rgba(245,197,66,.25)
+  }
+
+  /* --- Feedback toast --- */
+  #character-feedback{
+    background: rgba(255,255,255,.85) !important; border:1px solid #eef3fb;
+    box-shadow: 0 12px 26px rgba(28,42,58,.12)
+  }
+
+  /* --- Achievement snackbar --- */
+  #achievement-unlocked{
+    background: linear-gradient(135deg, #0f172a, #1e293b) !important;
+    border: 1px solid rgba(255,255,255,.06);
+    box-shadow: 0 20px 40px rgba(2,6,23,.5);
+  }
+
+  /* --- Settings modal polish --- */
+  #settings-modal .modal-content{
+    background: rgba(255,255,255,.9) !important;
+    backdrop-filter: blur(12px);
+    border:1px solid rgba(255,255,255,.7);
+    box-shadow: var(--shadow-2);
+  }
+  .accordion-section > div:first-child{box-shadow: 0 8px 20px rgba(245,197,66,.25)}
+
+  /* --- Scope chips --- */
+  .scope-ctrl .chip{
+    background:#fff; border:1px solid #e9eef7; color:#1f2937;
+    box-shadow: 6px 6px 14px rgba(28,42,58,.06), -4px -4px 12px rgba(255,255,255,.9)
+  }
+  .scope-ctrl .chip.active{border-color:var(--primary-500); box-shadow: 0 0 0 4px rgba(47,128,237,.15)}
+</style>
+
+<!-- Decorative layer (no logic impact) -->
+<div class="scene-glow" aria-hidden="true"></div>
+
+<script>
+// Optional micro-interactions: press effect & ripple
+(function(){
+  const buttons = document.querySelectorAll('#options-container button, .primary-btn, .secondary-btn, #hint-btn');
+  buttons.forEach(btn=>{
+    btn.addEventListener('pointerdown',()=>{
+      btn.style.transform = 'translateY(0) scale(.995)';
+    });
+    btn.addEventListener('pointerup',()=>{
+      btn.style.transform = '';
+    });
+    btn.addEventListener('click', function(e){
+      const r = document.createElement('span');
+      const rect = this.getBoundingClientRect();
+      const size = Math.max(rect.width, rect.height);
+      r.style.cssText = `position:absolute;inset:0;margin:auto;width:${size}px;height:${size}px;border-radius:50%;
+        transform:translate(-50%,-50%);pointer-events:none;mix-blend-mode:overlay;background:radial-gradient(circle, rgba(255,255,255,.6) 0%, rgba(255,255,255,0) 60%);
+        left:${e.clientX - rect.left}px;top:${e.clientY - rect.top}px;opacity:.9;`; 
+      this.style.position = 'relative';
+      this.appendChild(r);
+      setTimeout(()=>r.remove(),350);
+    });
+  });
+})();
+
+// Ensure scope chips reflect current radio
+(function(){
+  const chips = document.querySelectorAll('.scope-ctrl .chip');
+  chips.forEach(c=>{
+    const input = c.querySelector('input');
+    if(input){
+      c.classList.toggle('active', input.checked);
+      input.addEventListener('change',()=>{
+        chips.forEach(x=>x.classList.remove('active'));
+        c.classList.add('active');
+      });
+    }
+  });
+})();
+</script>
+
+<!-- ✅ Unified 3D Light Theme (single design system, consistent across all components) -->
+<style id="unified-3d-light" data-version="1.0.0">
+  /* ===== Design Tokens (Single Source of Truth) ===== */
+  :root{
+    /* Brand */
+    --brand: #2f80ed;          /* Primary Blue */
+    --brand-600: #2f80ed;
+    --brand-700: #2f80ed;
+
+    --accent: #2f80ed;         /* Premium Gold */
+    --accent-600: #2f80ed;
+
+    /* Semantic */
+    --success:#16a34a;
+    --danger:#e11d48;
+    --warning:#f59e0b;
+    --info:#0ea5e9;
+
+    /* Surfaces */
+    --surface:#ffffff;
+    --surface-2:#f7fafc;
+    --surface-3:#eef3fb;
+
+    /* Text */
+    --ink:#0f172a;
+    --muted:#556075;
+
+    /* Effects */
+    --card-shadow: 0 14px 30px rgba(21, 37, 67, .12);
+    --soft-shadow: 6px 6px 14px rgba(21, 37, 67, .08), -4px -4px 12px rgba(255,255,255,.85);
+    --radius: 16px;
+  }
+
+  /* ===== Global Reset for Consistency ===== */
+  body{
+    color: var(--ink) !important;
+    background:
+      radial-gradient(900px 500px at 8% -6%, #eaf2ff 0%, transparent 52%),
+      radial-gradient(700px 420px at 105% 6%, #fff1cc 0%, transparent 55%),
+      linear-gradient(180deg, #f9fbff 0%, #f3f6fb 100%) !important;
+  }
+  body.dark-mode, body.dark-mode *{ /* Disable dark-mode visuals (light-only) */
+    background-color: unset !important;
+    color: unset !important;
+    filter: none !important;
+  }
+
+  /* Container */
+  #app-container{
+    background: rgba(255,255,255,.78) !important;
+    border: 1px solid rgba(255,255,255,.65) !important;
+    border-radius: var(--radius) !important;
+    box-shadow: var(--card-shadow) !important;
+  }
+  #app-container::before{
+    background: linear-gradient(90deg, var(--accent), var(--brand), #7bd3ff) !important;
+  }
+
+  /* Typography */
+  h1, h2, h3, p, label, button{ font-family: 'Noto Sans KR', system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif !important; }
+  h1#main-title{ text-shadow: 0 1px 0 rgba(255,255,255,.7), 0 6px 18px rgba(47,128,237,.2) !important; }
+  h2, h3{ color: var(--brand) !important; }
+
+  /* Stat / Chips */
+  #stats-container{
+    background: var(--surface-2) !important;
+    border: 1px solid var(--surface-3) !important;
+    box-shadow: var(--soft-shadow) !important;
+    border-radius: var(--radius) !important;
+  }
+  #quiz-stats-display{
+    background: rgba(255,255,255,.85) !important;
+    border: 1px solid rgba(255,255,255,.9) !important;
+    color: var(--muted) !important;
+    border-radius: 999px !important;
+  }
+  #timer{
+    color: var(--danger) !important;
+    background: rgba(225,29,72,.10) !important;
+    border: 1px solid rgba(225,29,72,.2) !important;
+    border-radius: 999px !important;
+  }
+
+  /* Progress */
+  #progress-bar-container{ background: #e8eef8 !important; }
+  #progress-bar{
+    background: linear-gradient(270deg, var(--accent), var(--brand), #7bd3ff) !important;
+    background-size: 300% 300% !important;
+  }
+
+  /* Lists / Cards */
+  #quiz-selection{
+    background: var(--surface-2) !important;
+    border: 1px solid var(--surface-3) !important;
+    border-radius: var(--radius) !important;
+  }
+  #quiz-selection .range-header{
+    background: #fff7db !important;
+    border-left-color: var(--accent) !important;
+  }
+  #quiz-selection label{
+    background: var(--surface) !important;
+    border: 1px solid var(--surface-3) !important;
+    box-shadow: 0 8px 16px rgba(21,37,67,.06) !important;
+    border-radius: calc(var(--radius) - 4px) !important;
+  }
+  #quiz-selection label:hover{
+    border-color: var(--brand) !important;
+    box-shadow: 0 16px 30px rgba(47,128,237,.14) !important;
+  }
+  #quiz-selection label.selected{
+    background: #f0f6ff !important;
+    border-color: var(--brand) !important;
+  }
+  #quiz-selection .quiz-range.completed{
+    background: #ecfff2 !important;
+    border: 1px solid #b8f2ca !important;
+  }
+
+  /* Question / Hint */
+  #question-container p{
+    background: linear-gradient(180deg,#ffffff 0%, #f6f9ff 100%) !important;
+    border: 1px solid var(--surface-3) !important;
+    border-radius: var(--radius) !important;
+  }
+  #hint-btn{
+    background: linear-gradient(135deg, var(--accent), var(--accent-600)) !important;
+    color:#1a1a1a !important;
+    border-radius: 999px !important;
+  }
+
+  /* Options */
+  #options-container button{
+    background: linear-gradient(180deg,#ffffff 0%, #f8fbff 100%) !important;
+    border: 1px solid var(--surface-3) !important;
+    border-radius: calc(var(--radius) - 2px) !important;
+    box-shadow: var(--soft-shadow) !important;
+    color: var(--ink) !important;
+  }
+  #options-container button.correct{
+    background: linear-gradient(180deg,#ecfff4 0%, #e6ffef 100%) !important;
+    border-color: #34d399 !important; color:#065f46 !important;
+  }
+  #options-container button.incorrect{
+    background: linear-gradient(180deg,#fff0f3 0%, #ffe7eb 100%) !important;
+    border-color:#fb7185 !important; color:#9f1239 !important;
+  }
+
+  /* CTA Buttons */
+  button.primary-btn{
+    background: linear-gradient(135deg, var(--brand), #7bd3ff) !important;
+    color: #fff !important; border: none !important;
+    border-radius: var(--radius) !important;
+  }
+  button.secondary-btn{
+    background: linear-gradient(135deg, var(--accent), var(--accent-600)) !important;
+    color: #111 !important; border: none !important;
+    border-radius: var(--radius) !important;
+  }
+
+  /* Feedback / Result */
+  #character-feedback{
+    background: rgba(255,255,255,.9) !important;
+    border: 1px solid var(--surface-3) !important;
+    border-radius: var(--radius) !important;
+  }
+  #result-screen .character-img{ box-shadow: var(--card-shadow) !important; }
+  #incorrect-answers-section h3{ color: var(--danger) !important; }
+
+  /* Modal */
+  #settings-modal .modal-content{
+    background: rgba(255,255,255,.92) !important;
+    border: 1px solid rgba(255,255,255,.7) !important;
+    border-radius: var(--radius) !important;
+    box-shadow: var(--card-shadow) !important;
+  }
+  .accordion-section > div:first-child{
+    background: linear-gradient(135deg, var(--accent), var(--accent-600)) !important;
+    color:#1f2937 !important;
+  }
+
+  /* Achievements */
+  #achievement-unlocked{
+    background: linear-gradient(135deg, #0f172a, #1e293b) !important;
+    border-radius: 14px !important;
+  }
+</style>
+
+<style id="title-bold-patch">
+h1#main-title {
+  font-weight: 800 !important;
+  color: #2f80ed !important;  /* Solid blue */
+  text-shadow: 0 2px 4px rgba(0,0,0,.2), 0 1px 0 rgba(255,255,255,.6) !important;
+  letter-spacing: -0.5px !important;
+}
+</style>
+
+<style id="title-3d-patch">
+h1#main-title {
+  font-weight: 900 !important;
+  color: #2f80ed !important; /* Solid blue core */
+  letter-spacing: -0.5px !important;
+
+  text-shadow:
+    0 1px 0 #245dbb,
+    0 2px 0 #1b4f91,
+    0 3px 0 #123a66,
+    0 4px 0 #0a2744,
+    0 5px 6px rgba(0,0,0,.4),
+    0 -1px 2px rgba(255,255,255,.6);
+
+  -webkit-text-stroke: 1px rgba(0,0,0,.15);
+}
+</style>
+
+<style id="depth-upgrade-patch">
+  /* ===== Unified Depth System ===== */
+  :root{
+    --elev-1: 0 6px 14px rgba(21,37,67,.10), -4px -4px 10px rgba(255,255,255,.75);
+    --elev-2: 0 12px 26px rgba(21,37,67,.14), -6px -6px 14px rgba(255,255,255,.85);
+    --elev-3: 0 18px 40px rgba(21,37,67,.18), 0 0 0 1px rgba(255,255,255,.6) inset;
+    --press-inset: inset 0 2px 4px rgba(0,0,0,.06), inset 0 -1px 2px rgba(255,255,255,.7);
+    --brand:#2f80ed;
+  }
+
+  /* ===== Cards & Panels ===== */
+  #app-container,
+  #stats-container,
+  #quiz-selection,
+  #question-container p,
+  #character-feedback,
+  #incorrect-answers-section,
+  #result-screen .card,
+  #settings-modal .modal-content {
+    position: relative;
+    background: linear-gradient(180deg,#ffffff 0%, #f6f9ff 100%) !important;
+    border: 1px solid #e6edf7 !important;
+    border-radius: 18px !important;
+    box-shadow: var(--elev-2) !important;
+  }
+  /* subtle top highlight edge */
+  #app-container::after,
+  #stats-container::after,
+  #quiz-selection::after,
+  #question-container p::after,
+  #character-feedback::after,
+  #incorrect-answers-section::after,
+  #result-screen .card::after,
+  #settings-modal .modal-content::after {
+    content:"";
+    position:absolute; left:0; top:0; right:0; height:12px; border-radius:18px 18px 0 0;
+    background: linear-gradient(180deg, rgba(255,255,255,.9), rgba(255,255,255,0));
+    pointer-events:none;
+  }
+
+  /* Hover elevation for interactive cards (range labels) */
+  #quiz-selection label {
+    box-shadow: var(--elev-1) !important;
+    transition: transform .18s ease, box-shadow .18s ease;
+  }
+  #quiz-selection label:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--elev-2) !important;
+    border-color: var(--brand) !important;
+  }
+  #quiz-selection label.selected {
+    box-shadow: var(--elev-3) !important;
+  }
+
+  /* ===== Option Buttons (3D) ===== */
+  #options-container button {
+    position: relative;
+    background: linear-gradient(180deg,#ffffff 0%, #f3f8ff 100%) !important;
+    border: 1px solid #e3ecfb !important;
+    border-radius: 14px !important;
+    box-shadow: var(--elev-1) !important;
+    transition: transform .16s ease, box-shadow .16s ease, filter .16s ease;
+    overflow:hidden;
+  }
+  #options-container button::before{ /* top highlight */
+    content:""; position:absolute; left:10px; right:10px; top:6px; height:8px;
+    background: linear-gradient(180deg, rgba(255,255,255,.9), rgba(255,255,255,0));
+    border-radius: 99px; pointer-events:none;
+  }
+  #options-container button:hover:not(:disabled){
+    transform: translateY(-2px);
+    box-shadow: var(--elev-2) !important;
+    filter: saturate(1.03);
+  }
+  #options-container button:active{
+    transform: translateY(0);
+    box-shadow: var(--press-inset) !important;
+  }
+  #options-container button.correct{
+    background: linear-gradient(180deg,#ecfff4 0%, #e6ffef 100%) !important;
+    border-color:#34d399 !important; color:#065f46 !important;
+    box-shadow: 0 14px 30px rgba(16,185,129,.18) !important;
+  }
+  #options-container button.incorrect{
+    background: linear-gradient(180deg,#fff0f3 0%, #ffe7eb 100%) !important;
+    border-color:#fb7185 !important; color:#9f1239 !important;
+    box-shadow: 0 14px 30px rgba(251,113,133,.18) !important;
+  }
+
+  /* ===== Primary / Secondary CTA with sheen sweep ===== */
+  .cta-3d, button.primary-btn, button.secondary-btn, #hint-btn {
+    position: relative; overflow: hidden;
+    transform: translateZ(0); /* enable GPU hint */
+  }
+  .cta-3d::after, button.primary-btn::after, button.secondary-btn::after, #hint-btn::after {
+    content:""; position:absolute; top:-40%; left:-20%; width:40%; height:180%;
+    background: linear-gradient(60deg, rgba(255,255,255,.0) 0%, rgba(255,255,255,.35) 50%, rgba(255,255,255,.0) 100%);
+    transform: translateX(-120%) rotate(10deg);
+    transition: transform .7s ease;
+    pointer-events:none;
+  }
+  .cta-3d:hover::after, button.primary-btn:hover::after, button.secondary-btn:hover::after, #hint-btn:hover::after {
+    transform: translateX(260%) rotate(10deg);
+  }
+  button.primary-btn{
+    box-shadow: 0 16px 34px rgba(47,128,237,.25) !important;
+  }
+  button.secondary-btn{
+    box-shadow: 0 16px 34px rgba(245,197,66,.25) !important;
+  }
+  #hint-btn{
+    box-shadow: 0 14px 28px rgba(47,128,237,.18) !important;
+  }
+
+  /* ===== Progress Bar Depth ===== */
+  #progress-bar-container{
+    background: linear-gradient(180deg,#e9f1ff,#dfe9ff) !important;
+    border: 1px solid #d3def7 !important;
+    border-radius: 999px !important;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,.06), 0 6px 14px rgba(47,128,237,.12) !important;
+  }
+  #progress-bar{
+    height: 12px !important;
+    border-radius: 999px !important;
+    box-shadow: 0 4px 14px rgba(47,128,237,.35) !important;
+  }
+
+  /* ===== Toasts / Achievements ===== */
+  #character-feedback{
+    box-shadow: 0 16px 36px rgba(21,37,67,.22) !important;
+  }
+  #achievement-unlocked{
+    box-shadow: 0 24px 44px rgba(2,6,23,.55) !important;
+  }
+
+  /* ===== Stats Chips ===== */
+  #quiz-stats-display .stat-chip{
+    background:#ffffff !important;
+    border:1px solid #e6edf7 !important;
+    border-radius: 12px !important;
+    box-shadow: var(--elev-1) !important;
+  }
+
+  /* ===== Modal header accent (3D) ===== */
+  .accordion-section > div:first-child{
+    position:relative;
+    box-shadow: 0 12px 24px rgba(245,197,66,.25) !important;
+  }
+  .accordion-section > div:first-child::after{
+    content:""; position:absolute; left:0; right:0; bottom:-1px; height:1px;
+    background: linear-gradient(90deg, rgba(255,255,255,.7), rgba(47,128,237,.25), rgba(255,255,255,.7));
+  }
+</style>
+
+<style id="depth-contrast-plus">
+/* ===== Depth & Contrast PLUS (targets existing IDs/classes) ===== */
+
+/* 1) App top bevel & container rim */
+#app-container{
+  background: linear-gradient(180deg,#ffffff 0%, #f5f9ff 100%) !important;
+  border: 1px solid #dfe7f5 !important;
+  box-shadow: 0 18px 40px rgba(21,37,67,.18), 0 2px 0 rgba(255,255,255,.8) inset !important;
+}
+#app-container::before{
+  height: 10px !important;
+  background: linear-gradient(90deg,#2f80ed,#69b4ff) !important;
+  box-shadow: 0 2px 6px rgba(47,128,237,.35);
+}
+/* soft top edge highlight */
+#app-container::after{
+  content:''; position:absolute; left:0; right:0; top:0; height:10px; border-radius:18px 18px 0 0;
+  background: linear-gradient(180deg, rgba(255,255,255,.9), rgba(255,255,255,0));
+  pointer-events:none;
+}
+
+/* 2) Level chip: stronger emboss */
+#quiz-stats-display{
+  background: linear-gradient(180deg,#ffffff 0%, #eff4ff 100%) !important;
+  border: 1px solid #d7e3f8 !important;
+  color: #0f172a !important;
+  box-shadow: 0 8px 18px rgba(21,37,67,.12), inset 0 1px 0 rgba(255,255,255,.9) !important;
+}
+
+/* 3) Timer pill: vivid & popped */
+#timer{
+  background: linear-gradient(180deg, #ffe2e6 0%, #ffd5db 100%) !important;
+  border: 1px solid #ffb3c0 !important;
+  color: #b3133b !important;
+  box-shadow: 0 10px 22px rgba(225,29,72,.18), inset 0 1px 0 rgba(255,255,255,.9) !important;
+}
+
+/* 4) Progress bar: inner bevel + glow fill */
+#progress-bar-container{
+  background: linear-gradient(180deg,#ecf3ff,#dfe8fb) !important;
+  border: 1px solid #cfdaf3 !important;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,.06), 0 8px 18px rgba(47,128,237,.12) !important;
+}
+#progress-bar{
+  height: 12px !important;
+  background: linear-gradient(90deg,#2f80ed,#69b4ff) !important;
+  box-shadow: 0 6px 16px rgba(47,128,237,.35), inset 0 -1px 0 rgba(255,255,255,.6) !important;
+}
+
+/* 5) Question card: deeper shadow & border */
+#question-container p{
+  background: linear-gradient(180deg,#ffffff 0%, #f5f8ff 100%) !important;
+  border: 1px solid #e0e7f5 !important;
+  box-shadow: 0 14px 30px rgba(21,37,67,.15) !important;
+}
+
+/* 6) Option buttons: stronger 3D + pressed state */
+#options-container button{
+  background: linear-gradient(180deg,#ffffff 0%, #f3f8ff 100%) !important;
+  border: 1px solid #dbe6fb !important;
+  box-shadow: 0 10px 22px rgba(21,37,67,.12), -4px -4px 10px rgba(255,255,255,.85) !important;
+  transform: translateZ(0);
+}
+#options-container button:hover:not(:disabled){
+  transform: translateY(-3px);
+  box-shadow: 0 16px 34px rgba(47,128,237,.18), -4px -4px 12px rgba(255,255,255,.9) !important;
+}
+#options-container button:active{
+  transform: translateY(0);
+  box-shadow: inset 0 2px 4px rgba(0,0,0,.08), inset 0 -1px 1px rgba(255,255,255,.8) !important;
+}
+/* Left accent rail more visible */
+#options-container button::before{
+  width: 7px !important;
+  background: linear-gradient(180deg,#2f80ed,#69b4ff) !important;
+  box-shadow: 0 0 10px rgba(47,128,237,.35);
+}
+/* correct/incorrect with depth */
+#options-container button.correct{
+  background: linear-gradient(180deg,#eafff2 0%, #e3ffe9 100%) !important;
+  border-color:#35c98f !important; color:#0d5f43 !important;
+  box-shadow: 0 14px 30px rgba(16,185,129,.2) !important;
+}
+#options-container button.incorrect{
+  background: linear-gradient(180deg,#fff0f3 0%, #ffe7eb 100%) !important;
+  border-color:#f08a9b !important; color:#941a2f !important;
+  box-shadow: 0 14px 30px rgba(251,113,133,.2) !important;
+}
+
+/* 7) Hint button/CTA: sheen sweep already exists; add rim */
+#hint-btn, .primary-btn, .secondary-btn{
+  border: 1px solid rgba(255,255,255,.7) !important;
+}
+
+/* 8) Settings modal: sheet depth + edge glow */
+#settings-modal .modal-content{
+  background: linear-gradient(180deg,#ffffff 0%, #f6f9ff 100%) !important;
+  border: 1px solid #e2e9f7 !important;
+  box-shadow: 0 30px 60px rgba(2,6,23,.45), 0 0 0 1px rgba(255,255,255,.8) inset !important;
+}
+/* modal header buttons (accordion triggers) */
+#settings-modal .accordion-section > div:first-child{
+  background: linear-gradient(135deg,#2f80ed,#69b4ff) !important;
+  box-shadow: 0 10px 24px rgba(47,128,237,.28) !important;
+}
+
+/* 9) Card shadows under big sections */
+#incorrect-answers-section,
+#result-screen .character-img{
+  box-shadow: 0 16px 36px rgba(21,37,67,.18) !important;
+}
+
+/* 10) Mobile contrast tweaks (small screens) */
+@media (max-width: 420px){
+  #options-container button{ border-width: 2px !important; }
+  #quiz-stats-display, #timer{ font-weight: 800 !important; }
+}
+</style>
+
+<style id="option-dot-remove-patch">
+/* Remove blue dot/rail before each option */
+#options-container button::before {
+  content: none !important;
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  background: none !important;
+  box-shadow: none !important;
+}
+</style>
+
+<style id="praise-theme-blue">
+/* === Blue theme for praise/compliment messages === */
+:root{ --brand:#2f80ed; --brand-600:#245dbb; }
+
+/* 1) Generic praise text */
+.praise-theme-text{
+  color: var(--brand) !important;
+  font-weight: 800 !important;
+  text-shadow: 0 1px 0 rgba(255,255,255,.8), 0 2px 6px rgba(47,128,237,.18) !important;
+}
+
+/* 2) Pill/badge style for XP gain */
+.praise-pill, .xp-gain, .xp-badge{
+  display:inline-block;
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--brand), #6bb8ff);
+  color: #fff !important;
+  border: 1px solid rgba(255,255,255,.6);
+  box-shadow: 0 12px 24px rgba(47,128,237,.28), inset 0 1px 0 rgba(255,255,255,.9);
+  font-weight: 800;
+}
+
+/* 3) Feedback / achievement to blue theme */
+#character-feedback{
+  background: linear-gradient(180deg,#ffffff 0%, #f0f7ff 100%) !important;
+  border: 1px solid #d8e6ff !important;
+  box-shadow: 0 16px 36px rgba(21,37,67,.18) !important;
+}
+#achievement-unlocked{
+  background: linear-gradient(135deg, #0f172a, #1e3a8a) !important;
+  border: 1px solid rgba(255,255,255,.08);
+  box-shadow: 0 24px 48px rgba(2,6,23,.55), 0 0 0 1px rgba(255,255,255,.2) inset !important;
+}
+#achievement-unlocked .title, #achievement-unlocked .subtitle{ color:#e6f0ff !important; }
+
+/* 4) Bottom encouragement banner (white rounded with text) */
+.praise-banner{
+  background: linear-gradient(180deg,#ffffff 0%, #f2f8ff 100%);
+  border: 1px solid #d8e6ff;
+  color: var(--brand) !important;
+  font-weight: 800;
+  box-shadow: 0 14px 30px rgba(47,128,237,.18);
+}
+</style>
+
+<script id="praise-autotag-blue">
+(function(){
+  const KO_POSITIVE = /(잘했|최고|훌륭|멋져|축하|성공|완료|보람|굿|대단)/;
+  const XP_RE = /\+\s*\d+\s*XP/i;
+
+  // Scan visible text nodes and tag elements
+  document.querySelectorAll('body *').forEach(el=>{
+    const t = (el.textContent||'').trim();
+    if(!t) return;
+
+    // +XP -> pill badge
+    if(XP_RE.test(t)){
+      el.classList.add('xp-gain'); // pill style
+      return;
+    }
+
+    // Encouragement Korean keywords
+    if(KO_POSITIVE.test(t)){
+      el.classList.add('praise-theme-text');
+      // If it looks like a single-line banner, enhance container
+      if(el.childElementCount === 0 && (el.offsetHeight<80) && (el.offsetWidth>180)){
+        el.classList.add('praise-banner');
+      }
+    }
+  });
+})();
+</script>
+
+<style id="praise-blue-override">
+/* Force praise/combo/encourage messages into blue theme */
+.praise-theme-text,
+.combo-text,
+#combo-message,
+#xp-message,
+#encourage-message {
+  color: #2f80ed !important;   /* Blue main */
+  font-weight: 800 !important;
+  text-shadow: 0 1px 0 rgba(255,255,255,.8),
+               0 2px 6px rgba(47,128,237,.25) !important;
+}
+
+/* Banner style (bottom encouragements) */
+.praise-banner {
+  background: linear-gradient(180deg,#ffffff 0%, #f2f8ff 100%) !important;
+  border: 1px solid #d8e6ff !important;
+  color: #2f80ed !important;
+  font-weight: 800 !important;
+  box-shadow: 0 14px 30px rgba(47,128,237,.18) !important;
+}
+</style>
+
+<style id="combo-blue-override">
+/* Force combo and encouragement text to blue */
+.combo-text,
+#combo-message,
+#encourage-message {
+  color: #2f80ed !important;
+  font-weight: 900 !important;
+  text-shadow: 0 1px 0 rgba(255,255,255,.8),
+               0 2px 6px rgba(47,128,237,.25) !important;
+}
+
+/* Replace 🔥 emoji with blue icon */
+.combo-text::before,
+#combo-message::before {
+  content: "💙 " !important;
+  font-size: 1.2em;
+}
+
+/* Bottom praise banner override */
+.praise-banner {
+  background: linear-gradient(180deg,#ffffff 0%, #f2f8ff 100%) !important;
+  border: 1px solid #d8e6ff !important;
+  color: #2f80ed !important;
+  font-weight: 800 !important;
+  box-shadow: 0 14px 30px rgba(47,128,237,.18) !important;
+}
+</style>
+
+<style id="praise-color-override">
+/* Force all praise/encouragement messages to blue */
+#character-feedback,
+#result-screen .praise-message,
+.praise-theme-text,
+.praise-banner,
+#xp-message,
+#encourage-message {
+  color: #2f80ed !important;   /* Blue main */
+}
+</style>
+
+<style id="hint-3d-upgrade">
+/* ===== 3D Hint Button (solid depth, hover lift, pressed inset) ===== */
+:root{ --brand:#2f80ed; --brand-600:#245dbb; }
+
+#hint-btn, button#hint-btn, .hint-btn, .hint-button {
+  position: relative !important;
+  overflow: hidden !important;
+  border: 1px solid rgba(255,255,255,.75) !important;
+  border-radius: 999px !important;
+  padding: 14px 18px !important;
+  background: linear-gradient(135deg, var(--brand) 0%, #6bb8ff 100%) !important;
+  color: #fff !important;
+  font-weight: 800 !important;
+  letter-spacing: -.2px !important;
+  box-shadow:
+    0 16px 34px rgba(47,128,237,.28),
+    0 2px 0 rgba(255,255,255,.65) inset,
+    0 -2px 0 rgba(0,0,0,.08) inset !important;
+  transform: translateZ(0);
+  transition: transform .16s ease, box-shadow .16s ease, filter .16s ease;
+}
+
+/* glossy highlight strip */
+#hint-btn::before, button#hint-btn::before, .hint-btn::before, .hint-button::before {
+  content: "";
+  position: absolute; left: 12px; right: 12px; top: 6px; height: 10px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(255,255,255,.95), rgba(255,255,255,0));
+  pointer-events: none;
+}
+
+/* sheen sweep */
+#hint-btn::after, button#hint-btn::after, .hint-btn::after, .hint-button::after {
+  content: "";
+  position: absolute; top: -40%; left: -20%; width: 40%; height: 180%;
+  background: linear-gradient(60deg, rgba(255,255,255,0) 0%, rgba(255,255,255,.45) 50%, rgba(255,255,255,0) 100%);
+  transform: translateX(-120%) rotate(10deg);
+  transition: transform .7s ease;
+  pointer-events: none;
+}
+#hint-btn:hover::after, button#hint-btn:hover::after, .hint-btn:hover::after, .hint-button:hover::after {
+  transform: translateX(260%) rotate(10deg);
+}
+
+/* hover: lift */
+#hint-btn:hover, button#hint-btn:hover, .hint-btn:hover, .hint-button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 22px 44px rgba(47,128,237,.34),
+              0 2px 0 rgba(255,255,255,.7) inset,
+              0 -2px 0 rgba(0,0,0,.08) inset !important;
+  filter: saturate(1.05);
+}
+
+/* active: pressed inset */
+#hint-btn:active, button#hint-btn:active, .hint-btn:active, .hint-button:active {
+  transform: translateY(0);
+  box-shadow: inset 0 3px 6px rgba(0,0,0,.12),
+              inset 0 -1px 1px rgba(255,255,255,.7) !important;
+}
+
+/* optional: small bulb emoji glow if present inside */
+#hint-btn .emoji, #hint-btn .icon, #hint-btn .bulb,
+button#hint-btn .emoji, .hint-btn .emoji, .hint-button .emoji {
+  text-shadow: 0 0 6px rgba(255,255,255,.8), 0 0 16px rgba(255,255,255,.6);
+}
+</style>
+
+<style id="hint-3d-nobar">
+/* Remove glossy bar above text in hint button */
+#hint-btn::before,
+button#hint-btn::before,
+.hint-btn::before,
+.hint-button::before {
+  content: none !important;
+  display: none !important;
+}
+</style>
+
+<style id="title-3d-plus-patch">
+/* Stronger 3D lettering for main title */
+h1#main-title {
+  position: relative !important;
+  font-weight: 900 !important;
+  letter-spacing: -0.5px !important;
+  line-height: 1.1 !important;
+
+  /* metallic-ish internal highlight without losing blue identity */
+  background: linear-gradient(180deg, #ffffff 12%, #3ea0ff 38%, #2f80ed 60%, #1e4f9a 88%) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+
+  /* multi-depth shadow stack (bottom heavy) + gentle top highlight */
+  text-shadow:
+    0 1px 0 #245dbb,
+    0 2px 0 #1b4f91,
+    0 3px 0 #123a66,
+    0 4px 0 #0a2744,
+    0 6px 10px rgba(0,0,0,.35),
+    0 -1px 2px rgba(255,255,255,.7) !important;
+
+  /* subtle outline to keep edges crisp over busy backgrounds */
+  -webkit-text-stroke: 1px rgba(0,0,0,.22) !important;
+}
+
+/* soft ground shadow under the wordmark to enhance pop-out */
+h1#main-title::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; bottom: -6px; height: 6px;
+  background: radial-gradient(60% 100% at 50% 0%, rgba(0,0,0,.35), rgba(0,0,0,0));
+  filter: blur(4px);
+  opacity: .35;
+  pointer-events: none;
+}
+</style>
 </body>
 </html>
